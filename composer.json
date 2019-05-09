@@ -4,7 +4,8 @@
     "type": "project",
     "require": {
         "moneyphp/money": "^3.2",
-        "beberlei/assert": "^3.2"
+        "beberlei/assert": "^3.2",
+        "twig/twig": "^2.9"
     },
     "autoload": {
         "psr-4": {

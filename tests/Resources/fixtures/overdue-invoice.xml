@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<invoice number="ABC-1234-567">
+    <customer>McDonald</customer>
+    <dueDate>2019-03-30</dueDate>
+    <dueAmount currency="EUR">
+        12780
+    </dueAmount>
+    <comment>Invoice is entitled to penalty fees</comment>
+</invoice>

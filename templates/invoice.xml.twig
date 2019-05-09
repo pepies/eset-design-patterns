@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<invoice number="{{ invoice.number }}">
+    <customer>{{ invoice.customer }}</customer>
+    <dueDate>{{ invoice.dueDate|date('Y-m-d') }}</dueDate>
+    <dueAmount currency="{{ invoice.currency }}">
+        {{ invoice.totalAmount }}
+    </dueAmount>
+    {{ invoice.overdue ? '<comment>Invoice is entitled to penalty fees</comment>' : '' }}
+</invoice>
