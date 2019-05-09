@@ -2,6 +2,7 @@
 
 namespace Tests\ESET\Shopping\Coupon;
 
+use ESET\Shopping\Coupon\CouponBuilder;
 use ESET\Shopping\Coupon\IneligibleCouponException;
 use ESET\Shopping\Coupon\LimitedLifetimeConstraint;
 use ESET\Shopping\Coupon\MinimumPurchaseAmountConstraint;
@@ -16,16 +17,14 @@ final class LimitedLifetimeConstraintTest extends TestCase
     public function testCouponIsEligible(): void
     {
         ClockMock::register(LimitedLifetimeConstraint::class);
+        ClockMock::register(CouponBuilder::class);
         ClockMock::withClockMock(strtotime('2019-01-16 08:34:51'));
 
-        $coupon = LimitedLifetimeConstraint::between(
-            new MinimumPurchaseAmountConstraint(
-                RateCoupon::fromPercentage('dehfgwre', 15),
-                Money::EUR(4000)
-            ),
-            '2019-01-01 00:00:00',
-            '2019-01-31 23:59:59',
-        );
+        $coupon = CouponBuilder::rate(15, 'dehfgwre')
+            ->requiresMinimumPurchaseAmountOf('EUR 4000')
+            ->expiresOn('2019-01-31 23:59:59')
+            ->getCoupon()
+        ;
 
         $order = new Order(Money::EUR(12500));
 
