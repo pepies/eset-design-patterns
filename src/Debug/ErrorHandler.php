@@ -12,6 +12,7 @@ final class ErrorHandler
 
     private $errors = [];
     private $exceptions = [];
+    private $processors;
 
     public static function create(int $errorLevel = E_ALL): self
     {
@@ -36,6 +37,7 @@ final class ErrorHandler
     private function __construct(int $errorLevel)
     {
         $this->errorLevel = $errorLevel;
+        $this->processors = new \SplObjectStorage();
     }
 
     private function __clone()
@@ -47,6 +49,13 @@ final class ErrorHandler
         throw new \BadMethodCallException('Object deserialization is not allowed.');
     }
 
+    public function addProcessor(ErrorProcessor $processor)
+    {
+        $this->processors->attach($processor);
+
+        return $this;
+    }
+
     public function handleError(int $number, string $error, string $file, int $line): void
     {
         $this->errors[] = [
@@ -56,6 +65,8 @@ final class ErrorHandler
             'line' => $line,
             'ts' => time(),
         ];
+
+        $this->notifyProcessors(new \ErrorException($error, 0, $number, $file, $line));
     }
 
     public function handleException(\Throwable $e): void
@@ -64,6 +75,20 @@ final class ErrorHandler
             'exception' => $e,
             'ts' => time(),
         ];
+
+        $this->notifyProcessors($e);
+    }
+
+    private function notifyProcessors(\Throwable $error): void
+    {
+        foreach ($this->processors as $processor) {
+            try {
+                $processor->process($error);
+            } catch (\Throwable $e) {
+                // let's ignore and continue...
+                throw $e;
+            }
+        }
     }
 
     public function getErrors(): array
