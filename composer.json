@@ -5,7 +5,8 @@
     "require": {
         "moneyphp/money": "^3.2",
         "beberlei/assert": "^3.2",
-        "twig/twig": "^2.9"
+        "twig/twig": "^2.9",
+        "symfony/options-resolver": "^4.2"
     },
     "autoload": {
         "psr-4": {

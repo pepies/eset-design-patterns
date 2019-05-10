@@ -3,34 +3,19 @@
 namespace ESET\Shopping\Coupon;
 
 use ESET\Shopping\MoneyParser;
-use Money\Money;
 
-class CouponBuilder
+abstract class CouponBuilder
 {
-    private $coupon;
+    /** @var Coupon */
+    protected $coupon;
+    protected $customCode;
 
-    private function __construct(Coupon $coupon)
-    {
-        $this->coupon = $coupon;
-    }
-
-    public static function rate(float $percentage, string $code): self
-    {
-        return new self(RateCoupon::fromPercentage($code, $percentage));
-    }
-
-    public static function value(string $discount, string $code): self
-    {
-        return new self(new ValueCoupon($code, self::parseMoney($discount)));
-    }
-
-    private static function parseMoney(string $money): Money
-    {
-        return (new MoneyParser())->parse($money);
-    }
+    abstract protected function initializeCoupon(): void;
 
     public function expiresOn(string $expirationDate)
     {
+        $this->initializeCoupon();
+
         $this->coupon = new LimitedLifetimeConstraint(
             $this->coupon,
             \DateTimeImmutable::createFromFormat('U', time()),
@@ -40,11 +25,20 @@ class CouponBuilder
         return $this;
     }
 
+    public function withCustomCode(string $customCode)
+    {
+        $this->customCode = $customCode;
+
+        return $this;
+    }
+
     public function requiresMinimumPurchaseAmountOf(string $amount)
     {
+        $this->initializeCoupon();
+
         $this->coupon = new MinimumPurchaseAmountConstraint(
             $this->coupon,
-            self::parseMoney($amount)
+            (new MoneyParser)->parse($amount)
         );
 
         return $this;

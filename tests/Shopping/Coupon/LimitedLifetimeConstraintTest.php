@@ -3,9 +3,10 @@
 namespace Tests\ESET\Shopping\Coupon;
 
 use ESET\Shopping\Coupon\CouponBuilder;
+use ESET\Shopping\Coupon\Factory\RateCouponAbstractFactory;
+use ESET\Shopping\Coupon\FixedCouponCodeGenerator;
 use ESET\Shopping\Coupon\IneligibleCouponException;
 use ESET\Shopping\Coupon\LimitedLifetimeConstraint;
-use ESET\Shopping\Coupon\MinimumPurchaseAmountConstraint;
 use ESET\Shopping\Coupon\RateCoupon;
 use ESET\Shopping\Order;
 use Money\Money;
@@ -14,13 +15,23 @@ use Symfony\Bridge\PhpUnit\ClockMock;
 
 final class LimitedLifetimeConstraintTest extends TestCase
 {
+    private $factory;
+
+    protected function setUp(): void
+    {
+        $this->factory = new RateCouponAbstractFactory(new FixedCouponCodeGenerator());
+    }
+
     public function testCouponIsEligible(): void
     {
         ClockMock::register(LimitedLifetimeConstraint::class);
         ClockMock::register(CouponBuilder::class);
         ClockMock::withClockMock(strtotime('2019-01-16 08:34:51'));
 
-        $coupon = CouponBuilder::rate(15, 'dehfgwre')
+        $builder = $this->factory->createCouponBuilder(['percentage' => 15]);
+
+        $coupon = $builder
+            ->withCustomCode('dehfgwre')
             ->requiresMinimumPurchaseAmountOf('EUR 4000')
             ->expiresOn('2019-01-31 23:59:59')
             ->getCoupon()
