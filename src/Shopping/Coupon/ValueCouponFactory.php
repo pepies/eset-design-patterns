@@ -3,22 +3,26 @@
 namespace ESET\Shopping\Coupon;
 
 use Assert\Assertion;
-use Money\Currency;
-use Money\Money;
+use ESET\Shopping\MoneyParser;
 
 class ValueCouponFactory extends AbstractCouponFactory
 {
-    private function parseMoney(string $money): Money
-    {
-        [$currency, $amount] = explode(' ', $money);
+    private $parser;
 
-        return new Money($amount, new Currency($currency));
+    public function __construct(
+        MoneyParser $moneyParser,
+        UniqueCouponCodeGenerator $generator,
+        int $defaultCodeLength = 8
+    ) {
+        parent::__construct($generator, $defaultCodeLength);
+
+        $this->parser = $moneyParser;
     }
 
-    protected function issueCoupon(string $code, array $context): Coupon
+    protected function issueCoupon(string $code, array $options = []): Coupon
     {
-        Assertion::notEmptyKey($context, 'discount');
+        Assertion::notEmptyKey($options, 'discount');
 
-        return new ValueCoupon($code, $this->parseMoney($context['discount']));
+        return new ValueCoupon($code, $this->parser->parse($options['discount']));
     }
 }

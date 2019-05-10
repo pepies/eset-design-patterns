@@ -13,15 +13,15 @@ abstract class AbstractCouponFactory implements CouponFactory
         $this->defaultCodeLength = $defaultCodeLength;
     }
 
-    public function createCoupon(array $context): Coupon
+    public function createCoupon(array $options = []): Coupon
     {
-        $code = $context['code'] ?? null;
+        $code = $options['code'] ?? null;
         if (!$code) {
-            $code = $this->codeGenerator->generate($context['length'] ?? $this->defaultCodeLength);
+            $code = $this->codeGenerator->generate($options['length'] ?? $this->defaultCodeLength);
         }
 
-        return $this->issueCoupon($code, $context);
+        return $this->issueCoupon($code, $options);
     }
 
-    abstract protected function issueCoupon(string $code, array $context): Coupon;
+    abstract protected function issueCoupon(string $code, array $options = []): Coupon;
 }

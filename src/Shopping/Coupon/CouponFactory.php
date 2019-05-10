@@ -4,5 +4,5 @@ namespace ESET\Shopping\Coupon;
 
 interface CouponFactory
 {
-    public function createCoupon(array $context): Coupon;
+    public function createCoupon(array $options = []): Coupon;
 }

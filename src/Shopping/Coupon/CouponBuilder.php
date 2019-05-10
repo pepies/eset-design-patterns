@@ -2,7 +2,7 @@
 
 namespace ESET\Shopping\Coupon;
 
-use Money\Currency;
+use ESET\Shopping\MoneyParser;
 use Money\Money;
 
 class CouponBuilder
@@ -26,9 +26,7 @@ class CouponBuilder
 
     private static function parseMoney(string $money): Money
     {
-        [$currency, $amount] = explode(' ', $money);
-
-        return new Money($amount, new Currency($currency));
+        return (new MoneyParser())->parse($money);
     }
 
     public function expiresOn(string $expirationDate)
