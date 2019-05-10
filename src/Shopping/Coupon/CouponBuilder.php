@@ -12,7 +12,7 @@ abstract class CouponBuilder
 
     abstract protected function initializeCoupon(): void;
 
-    public function expiresOn(string $expirationDate)
+    final public function expiresOn(string $expirationDate)
     {
         $this->initializeCoupon();
 
@@ -25,14 +25,14 @@ abstract class CouponBuilder
         return $this;
     }
 
-    public function withCustomCode(string $customCode)
+    final public function withCustomCode(string $customCode)
     {
         $this->customCode = $customCode;
 
         return $this;
     }
 
-    public function requiresMinimumPurchaseAmountOf(string $amount)
+    final public function requiresMinimumPurchaseAmountOf(string $amount)
     {
         $this->initializeCoupon();
 
@@ -44,7 +44,7 @@ abstract class CouponBuilder
         return $this;
     }
 
-    public function getCoupon(): Coupon
+    final public function getCoupon(): Coupon
     {
         return $this->coupon;
     }
